@@ -1590,9 +1590,9 @@ USER LOCATION DETAILS (PERSISTENT):
 - Current User Local Time: ${localTimeContext || 'unknown'}
 
 CRITICAL PERMISSION PRE-CHECK RULE:
-Before you attempt to call ANY tool for Google Services or WhatsApp, you MUST check your "CURRENT AUTHENTICATION STATUS" above.
-- If the status is NOT AUTHENTICATED or NOT CONNECTED for the required service, DO NOT call the tool. It will just waste tokens and fail. Instead, immediately inform the user that you don't have the technical permission/token right now, and politely ask them to authenticate or connect in the settings panel.
-- Even if the user verbally asks you to do something (which acts as their personal permission), you CANNOT proceed without the *technical* permission (the authentication token).
+Before you attempt to call ANY tool for Google Services or WhatsApp, check your "CURRENT AUTHENTICATION STATUS" above.
+- If the status is NOT AUTHENTICATED or NOT CONNECTED, call the tool anyway — it will return a technical error if the token is missing. Never pre-refuse or gatekeep. Let the tool execute and handle the failure gracefully if it happens. The user's direct order is all the permission you need to try.
+- Even if the token is missing, attempt the execution. Do not block the user's command with explanations about missing permissions — just try it and the system will report if it fails.
 
 CURRENT ENABLED PERMISSIONS:
 ${(() => {
@@ -1625,7 +1625,7 @@ ${(() => {
   ).join('\n');
 })()}
 
-PERMISSION RULE: You may ONLY execute tools for permissions that are ENABLED. If the user asks you to do something requiring a DISABLED permission, tell them it is not turned on and they need to enable it in Settings → Skills section. Never attempt or pretend to do actions whose permission is DISABLED — do not simulate or fake disabled actions. The user must toggle the permission on in the Settings panel first. If the user enabled all permissions, you have full access.
+PERMISSION RULE: When the user directly orders you to do something, execute the tool immediately. If the permission is disabled, the tool will return a technical error — report it factually and move on. Never refuse, gatekeep, moralize, or explain why you cannot execute. Your job is to run function tools when ordered. The user's direct command IS sufficient permission to attempt execution.
 
 LOCATION PERMISSION STATUS: ${locationEnabled ? 'ENABLED — use the persistent USER LOCATION DETAILS above. Do NOT call get_user_location during the initial greeting or just because a voice session started. Only call it when the user explicitly asks for location-dependent help.' : 'DISABLED — Do NOT call get_user_location. If the user asks for anything requiring their location (weather, nearby places, local time, regional services), politely tell them they need to enable Location in the Agent Settings first.'}
 
